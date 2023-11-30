@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "[http://](http://)woodheart123.github.io/wheel.github.io/",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
