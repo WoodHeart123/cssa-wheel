@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState, useRef } from 'react'
 
 
 const WheelComponent = ({
   segments,
   segColors,
-  winningSegment,
   onFinished,
   primaryColor = 'black',
   contrastColor = 'white',
@@ -16,16 +15,21 @@ const WheelComponent = ({
   fontFamily = 'proxima-nova'
 }) => {
   let currentSegment = ''
-  let isStarted = false
+  const [isStarted, setIsStarted] = useState(false)
   const [isFinished, setFinished] = useState(false)
-  let timerHandle = 0
-  const timerDelay = segments.length
-  let angleCurrent = 0
-  let angleDelta = 0
+  const timerHandle = useRef(0)
+  const timerDelay = useMemo(() => segments.length, [segments])
+  const angleCurrent = useRef(0)
+  const angleDelta = useRef(0)
   let canvasContext = null
   let maxSpeed = Math.PI / `${segments.length}`
-  const upTime = segments.length * upDuration
-  const downTime = segments.length * downDuration
+  const upTime = useMemo(() => {
+    return segments.length * upDuration
+  }, [upDuration, segments]) 
+  const downTime = useMemo(() => {
+    return segments.length * downDuration
+  }, [downDuration, segments])
+
   let spinStart = 0
   let frames = 0
 
@@ -82,13 +86,12 @@ const WheelComponent = ({
   }
 
   const spin = () => {
-    isStarted = true
-    if (timerHandle === 0) {
+    setIsStarted(true)
+    if (timerHandle.current === 0) {
       spinStart = new Date().getTime()
-      // maxSpeed = Math.PI / ((segments.length*2) + Math.random())
       maxSpeed = Math.PI / segments.length
       frames = 0
-      timerHandle = setInterval(onTimerTick, timerDelay)
+      timerHandle.current = setInterval(onTimerTick, timerDelay)
     }
   }
   const onTimerTick = () => {
@@ -99,22 +102,23 @@ const WheelComponent = ({
     let finished = false
     if (duration < upTime) {
       progress = duration / upTime
-      angleDelta = maxSpeed * Math.sin((progress * Math.PI) / 2)
+      angleDelta.current = maxSpeed * Math.sin((progress * Math.PI) / 2)
     } else {
       progress = (duration - upTime) / downTime;
       progress = easeOutCubic(progress);
-      angleDelta = maxSpeed * (1 - progress);
-      if (progress >= 1) finished = true
+      console.log(progress)
+      angleDelta.current  = maxSpeed * (1 - progress);
+      if (progress >= 0.999) finished = true
     }
 
-    angleCurrent += angleDelta
-    while (angleCurrent >= Math.PI * 2) angleCurrent -= Math.PI * 2
+    angleCurrent.current += angleDelta.current
+    while (angleCurrent.current >= Math.PI * 2) angleCurrent.current -= Math.PI * 2
     if (finished) {
       setFinished(true)
       onFinished(currentSegment)
-      clearInterval(timerHandle)
-      timerHandle = 0
-      angleDelta = 0
+      clearInterval(timerHandle.current)
+      timerHandle.current = 0
+      angleDelta.current = 0
     }
   }
 
@@ -159,7 +163,7 @@ const WheelComponent = ({
     if (!canvasContext) return;
 
     const ctx = canvasContext
-    let lastAngle = angleCurrent
+    let lastAngle = angleCurrent.current
     const len = segments.length
     const PI2 = Math.PI * 2
     ctx.lineWidth = 1
@@ -168,7 +172,7 @@ const WheelComponent = ({
     ctx.textAlign = 'center'
     ctx.font = '1em ' + fontFamily
     for (let i = 1; i <= len; i++) {
-      const angle = PI2 * (i / len) + angleCurrent
+      const angle = PI2 * (i / len) + angleCurrent.current
       drawSegment(i - 1, lastAngle, angle)
       lastAngle = angle
     }
@@ -208,7 +212,7 @@ const WheelComponent = ({
     ctx.lineTo(center.x, center.y - 70)
     ctx.closePath()
     ctx.fill()
-    const change = angleCurrent + Math.PI / 2
+    const change = angleCurrent.current + Math.PI / 2
     let i =
       segments.length -
       Math.floor((change / (Math.PI * 2)) * segments.length) -

@@ -12,7 +12,9 @@ const Main = () => {
   const [names, setNames] = useState("")
   const [segColors, setSegColors] = useState([])
   const [winner, setWinner] = useState('')
-
+  const [upDuration, setUpDuration] = useState(1000)
+  const [downDuration, setDownDuration] = useState(3000)
+ 
   function generateDarkRandomColor() {
     const hue = Math.floor(Math.random() * 360);
     const saturation = Math.floor(Math.random() * 50) + 50;
@@ -96,9 +98,9 @@ const Main = () => {
         contrastColor='white'
         buttonText='开始!'
         isOnlyOnce={false}
-        size={290}
-        upDuration={500}
-        downDuration={5000}
+        size={300}
+        upDuration={upDuration}
+        downDuration={downDuration}
         fontFamily='Arial'
       />
     )
