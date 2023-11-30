@@ -1,11 +1,12 @@
 import './App.css'
-import Classroom from './components/Classroom'
+import WheelPage from './components/WheelPage'
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
-  return <div style={{margin: "1rem"}}>
-    <Classroom/>
+  return <div style={{width: '100%', height: '100%'}}>
+    <WheelPage/>
   </div>
 }
+
 
 export default App
