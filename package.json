@@ -1,16 +1,16 @@
 {
-  "name": "prize-wheel",
+  "name": "cssa-wheel",
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "[http://](http://)woodheart123.github.io/wheel.github.io/",
+  "homepage": "https://woodheart123.github.io/cssa-wheel/",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "predeploy" : "npm run build",
-    "deploy" : "gh-pages-d build"
+    "deploy" : "gh-pages -d dist"
   },
   "dependencies": {
     "bootstrap": "^5.3.2",
