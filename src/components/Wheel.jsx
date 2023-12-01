@@ -14,15 +14,14 @@ const WheelComponent = ({
   downDuration = 1000,
   fontFamily = 'proxima-nova'
 }) => {
-  let currentSegment = ''
-  const [isStarted, setIsStarted] = useState(false)
+  const currentSegment = useRef('')
+  const isStarted = useRef(false)
   const [isFinished, setFinished] = useState(false)
   const timerHandle = useRef(0)
-  const timerDelay = useMemo(() => segments.length, [segments])
   const angleCurrent = useRef(0)
   const angleDelta = useRef(0)
-  let canvasContext = null
-  let maxSpeed = Math.PI / `${segments.length}`
+  const canvasContext = useRef(null)
+  const maxSpeed = useRef(Math.PI / `${segments.length}`)
   const upTime = useMemo(() => {
     return segments.length * upDuration
   }, [upDuration, segments]) 
@@ -30,8 +29,8 @@ const WheelComponent = ({
     return segments.length * downDuration
   }, [downDuration, segments])
 
-  let spinStart = 0
-  let frames = 0
+  const spinStart = useRef(0)
+  const frames = useRef(0)
 
   const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
   const [center, setCenter] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
@@ -63,7 +62,7 @@ const WheelComponent = ({
 
 
   useEffect(() => {
-    canvasContext = document.getElementById('canvas').getContext('2d')
+    canvasContext.current = document.getElementById('canvas').getContext('2d')
     wheelDraw();
   }, [center])
 
@@ -82,32 +81,31 @@ const WheelComponent = ({
       document.getElementById('wheel').appendChild(canvas)
     }
     canvas.addEventListener('click', spin, false)
-    canvasContext = canvas.getContext('2d')
+    canvasContext.current = canvas.getContext('2d')
   }
 
   const spin = () => {
-    setIsStarted(true)
+    isStarted.current = true
     if (timerHandle.current === 0) {
-      spinStart = new Date().getTime()
-      maxSpeed = Math.PI / segments.length
-      frames = 0
-      timerHandle.current = setInterval(onTimerTick, timerDelay)
+      spinStart.current = new Date().getTime()
+      maxSpeed.current = Math.PI / segments.length
+      frames.current = 0
+      timerHandle.current = requestAnimationFrame(onTimerTick)
     }
   }
   const onTimerTick = () => {
-    frames++
+    frames.current++
     draw()
-    const duration = new Date().getTime() - spinStart
+    const duration = new Date().getTime() - spinStart.current
     let progress = 0
     let finished = false
     if (duration < upTime) {
       progress = duration / upTime
-      angleDelta.current = maxSpeed * Math.sin((progress * Math.PI) / 2)
+      angleDelta.current = maxSpeed.current * Math.sin((progress * Math.PI) / 2)
     } else {
       progress = (duration - upTime) / downTime;
       progress = easeOutCubic(progress);
-      console.log(progress)
-      angleDelta.current  = maxSpeed * (1 - progress);
+      angleDelta.current  = maxSpeed.current * (1 - progress);
       if (progress >= 0.999) finished = true
     }
 
@@ -115,10 +113,11 @@ const WheelComponent = ({
     while (angleCurrent.current >= Math.PI * 2) angleCurrent.current -= Math.PI * 2
     if (finished) {
       setFinished(true)
-      onFinished(currentSegment)
-      clearInterval(timerHandle.current)
+      onFinished(currentSegment.current)
       timerHandle.current = 0
       angleDelta.current = 0
+    }else{
+      requestAnimationFrame(onTimerTick)
     }
   }
 
@@ -139,7 +138,7 @@ const WheelComponent = ({
   }
 
   const drawSegment = (key, lastAngle, angle) => {
-    const ctx = canvasContext
+    const ctx = canvasContext.current
     const value = segments[key]
     ctx.save()
     ctx.beginPath()
@@ -160,9 +159,9 @@ const WheelComponent = ({
   }
 
   const drawWheel = () => {
-    if (!canvasContext) return;
+    if (!canvasContext.current) return;
 
-    const ctx = canvasContext
+    const ctx = canvasContext.current
     let lastAngle = angleCurrent.current
     const len = segments.length
     const PI2 = Math.PI * 2
@@ -175,9 +174,9 @@ const WheelComponent = ({
       const angle = PI2 * (i / len) + angleCurrent.current
       drawSegment(i - 1, lastAngle, angle)
       lastAngle = angle
-    }
+    } 
 
-    // Draw a center circle
+    // center circle
     ctx.beginPath()
     ctx.arc(center.x, center.y, 50, 0, PI2, false)
     ctx.closePath()
@@ -191,7 +190,7 @@ const WheelComponent = ({
     ctx.fillText(buttonText, center.x, center.y + 3)
     ctx.stroke()
 
-    // Draw outer circle
+    // outer circle
     ctx.beginPath()
     ctx.arc(center.x, center.y, size, 0, PI2, false)
     ctx.closePath()
@@ -202,7 +201,7 @@ const WheelComponent = ({
   }
 
   const drawNeedle = () => {
-    const ctx = canvasContext
+    const ctx = canvasContext.current
     ctx.lineWidth = 1
     ctx.strokeStyle = contrastColor
     ctx.fileStyle = contrastColor
@@ -222,12 +221,12 @@ const WheelComponent = ({
     ctx.textBaseline = 'middle'
     ctx.fillStyle = primaryColor
     ctx.font = 'bold 1.5em ' + fontFamily
-    currentSegment = segments[i]
-    isStarted && ctx.fillText(currentSegment, center.x + 10, center.y + size + 50)
+    currentSegment.current = segments[i]
+    isStarted.current && ctx.fillText(currentSegment.current, center.x + 10, center.y + size + 50)
   }
   const clear = () => {
-    if (!canvasContext) return;
-    canvasContext.clearRect(0, 0, windowSize.width, windowSize.height)
+    if (!canvasContext.current) return;
+    canvasContext.current.clearRect(0, 0, windowSize.width, windowSize.height)
   }
 
   return (
