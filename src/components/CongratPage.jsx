@@ -1,141 +1,50 @@
 import React, { useState, useEffect } from 'react'
+import Video from '../assets/5star-single.mp4'
+import Sound from '../assets/reveal-5star.ogg'
 
 function CongratPage(props) {
-  let canvas, ctx, xPoint, yPoint;
-  let particles = [];
-  const [probability, _] = useState(0.04);
-  const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
-
-  const debounce = (func, delay) => {
-    let debounceTimer;
-    return function () {
-      const context = this;
-      const args = arguments;
-      clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(() => func.apply(context, args), delay);
-    }
-  }
+  const [finished, setFinished] = useState(false);
 
   useEffect(() => {
-    const debouncedHandleResize = debounce(() => {
-      setWindowSize({ width: window.innerWidth, height: window.innerHeight });
-    }, 250);
-    onLoad()
-    window.addEventListener('resize', debouncedHandleResize);
-    return () => {
-      window.removeEventListener('resize', debouncedHandleResize);
-    };
-  }, []);
+    setTimeout(() => {
+      setFinished(true);
+    }, 6200)
+  }, [])
 
-  useEffect(() => {
-    onLoad()
-  }, [windowSize])
-
-  function onLoad() {
-    canvas = document.getElementById("congrat");
-    ctx = canvas.getContext("2d");
-    canvas.addEventListener('click', props.continues, false)
-    window.requestAnimationFrame(updateWorld);
-  }
-
-  function updateWorld() {
-    ctx = canvas.getContext("2d");
-    ctx.font = 'italic 70px Arial';
-    ctx.textAlign = 'center';
-    ctx. textBaseline = 'middle';
-    ctx.color = 'white'
-    ctx.fillStyle = 'white'; 
-    ctx.fillText('恭喜！', windowSize.width / 2, windowSize.height / 2 - 100);
-    ctx.font = 'italic 120px Arial';
-    ctx.fillText(props.winner, windowSize.width / 2, windowSize.height / 2 + 100);
-    update();
-    paint();
-    window.requestAnimationFrame(updateWorld);
-  }
-
-  function update() {
-    if (particles.length < 500 && Math.random() < probability) {
-      createFirework();
-    }
-    var alive = [];
-    for (var i = 0; i < particles.length; i++) {
-      if (particles[i].move()) {
-        alive.push(particles[i]);
-      }
-    }
-    particles = alive;
-  }
-
-  function paint() {
-    ctx.globalCompositeOperation = 'source-over';
-    ctx.fillStyle = "rgba(0,0,0,0.2)";
-    ctx.fillRect(0, 0, windowSize.width, windowSize.height);
-    ctx.globalCompositeOperation = 'lighter';
-    for (var i = 0; i < particles.length; i++) {
-      particles[i].draw(ctx);
-    }
-  }
-
-  function createFirework() {
-    xPoint = Math.random() * (windowSize.width - 200) + 100;
-    yPoint = Math.random() * (windowSize.height - 200) + 100;
-    var nFire = Math.random() * 50 + 100;
-    var c = "rgb(" + (~~(Math.random() * 200 + 55)) + ","
-      + (~~(Math.random() * 200 + 55)) + "," + (~~(Math.random() * 200 + 55)) + ")";
-    for (var i = 0; i < nFire; i++) {
-      var particle = new Particle();
-      particle.color = c;
-      var vy = Math.sqrt(25 - particle.vx * particle.vx);
-      if (Math.abs(particle.vy) > vy) {
-        particle.vy = particle.vy > 0 ? vy : -vy;
-      }
-      particles.push(particle);
-    }
-  }
-
-  class Particle {
-    constructor() {
-      this.w = this.h = Math.random() * 4 + 1;
-      this.x = xPoint - this.w / 2;
-      this.y = yPoint - this.h / 2;
-      this.vx = (Math.random() - 0.5) * 10;
-      this.vy = (Math.random() - 0.5) * 10;
-      this.alpha = Math.random() * .5 + .5;
-      this.color;
-      this.gravity = 0.05
-    }
-    move() {
-      this.x += this.vx;
-      this.vy += this.gravity;
-      this.y += this.vy;
-      this.alpha -= 0.01;
-      if (this.x <= -this.w || this.x >= screen.width ||
-        this.y >= screen.height ||
-        this.alpha <= 0) {
-        return false;
-      }
-      return true;
-    }
-    draw(c) {
-      c.save();
-      c.beginPath();
-      c.translate(this.x + this.w / 2, this.y + this.h / 2);
-      c.arc(0, 0, this.w, 0, Math.PI * 2);
-      c.fillStyle = this.color;
-      c.globalAlpha = this.alpha;
-      c.closePath();
-      c.fill();
-      c.restore();
-    }
-  }
 
   return (
-    <div id='congrat-page'>
-      <canvas
-        id='congrat'
-        width={windowSize.width}
-        height={windowSize.height}
-      />
+    <div id='congrat-page' style={{ width: "100vw", height: "100vh", overflow: 'hidden' }}>
+      {
+        finished ?
+          <div className='background'>
+            <video autoPlay style={{ display: "none" }}>
+              <source src={Sound} type="video/ogg" />
+            </video>
+            <div className='info'>
+              <div className="name animate">
+                <div className="text animate">
+                  {props.winner}
+                </div>
+
+                <div className="star animate">
+                  {
+                    Array.from({ length: 5 }, (_, index) => index).map((_, i) => {
+                      return (
+                        <svg className="gi-star animate" style={{ animationDelay: 2 + i * 0.15 + 's' }} t="1709853664995" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1459" width="50" height="50"><path d="M781.186088 616.031873q17.338645 80.573705 30.59761 145.848606 6.119522 27.537849 11.219124 55.075697t9.689243 49.976096 7.649402 38.247012 4.079681 19.888446q3.059761 20.398406-9.179283 27.027888t-27.537849 6.629482q-5.099602 0-14.788845-3.569721t-14.788845-5.609562l-266.199203-155.027888q-72.414343 42.836653-131.569721 76.494024-25.498008 14.278884-50.486056 28.557769t-45.386454 26.517928-35.187251 20.398406-19.888446 10.199203q-10.199203 5.099602-20.908367 3.569721t-19.378486-7.649402-12.749004-14.788845-2.039841-17.848606q1.01992-4.079681 5.099602-19.888446t9.179283-37.737052 11.729084-48.446215 13.768924-54.055777q15.298805-63.23506 34.677291-142.788845-60.175299-52.015936-108.111554-92.812749-20.398406-17.338645-40.286853-34.167331t-35.697211-30.59761-26.007968-22.438247-11.219124-9.689243q-12.239044-11.219124-20.908367-24.988048t-6.629482-28.047809 11.219124-22.438247 20.398406-10.199203l315.155378-28.557769 117.290837-273.338645q6.119522-16.318725 17.338645-28.047809t30.59761-11.729084q10.199203 0 17.848606 4.589641t12.749004 10.709163 8.669323 12.239044 5.609562 10.199203l114.231076 273.338645 315.155378 29.577689q20.398406 5.099602 28.557769 12.239044t8.159363 22.438247q0 14.278884-8.669323 24.988048t-21.928287 26.007968z" p-id="1460" fill="#f7cf33"></path></svg>
+                      )
+
+                    })
+                  }
+                </div>
+              </div>
+            </div>
+
+          </div>
+          :
+          <video width="100%" height="100%" autoPlay style={{ minHeight: '100%', minWidth: '100%', objectFit: 'cover' }}>
+            <source src={Video} type="video/mp4" />
+          </video>
+      }
     </div>)
 }
 
