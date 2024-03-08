@@ -6,8 +6,8 @@ import CongratPage from './CongratPage'
 
 const Main = () => {
 
-  const [isStarted, setIsStarted] = useState(true)
-  const [isFinished, setIsFinished] = useState(true)
+  const [isStarted, setIsStarted] = useState(false)
+  const [isFinished, setIsFinished] = useState(false)
   const [segments, setSegments] = useState([])
   const [names, setNames] = useState("")
   const [segColors, setSegColors] = useState([])

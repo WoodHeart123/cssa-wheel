@@ -35,8 +35,8 @@ html, body, #app, #app>div {
 }
 
 .background {
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   background-image: url("./assets/detailbg.webp");
   background-size: 100% 100%;
 }
@@ -133,3 +133,144 @@ html, body, #app, #app>div {
     opacity: 1;
   }
 }
+
+.art-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
+.zoomist-wrapper,
+	.zoomist-image {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.zoomist-wrapper {
+		--scale: 1.5;
+		--translate-x: 0px;
+		--translate-y: 0px;
+		background-color: unset;
+		position: relative;
+	}
+	.zoomist-wrapper.weapon {
+		--scale: 1.1;
+	}
+
+	img {
+		width: 100%;
+		height: 100%;
+		display: block;
+		object-fit: contain;
+		object-position: center;
+	}
+
+	.splash-art.anim {
+		filter: brightness(0) opacity(0);
+		animation: splashart forwards 1.5s 1;
+	}
+	.splash-art:not(.anim) {
+		transform: translate(2%, 0);
+	}
+
+	.zoomist-image {
+		position: relative;
+		width: var(--width);
+		height: var(--height);
+	}
+
+  @keyframes splashart {
+		0% {
+			transform: scale(5) translate(0, -5%);
+			filter: brightness(0);
+		}
+
+		20% {
+			transform: scale(1);
+			filter: brightness(0);
+		}
+		75% {
+			transform: scale(1);
+			filter: brightness(0);
+		}
+		95% {
+			transform: scale(1) translate(2%, 0);
+			filter: brightness(1);
+		}
+		100% {
+			transform: scale(1) translate(2%, 0);
+			filter: brightness(1);
+		}
+	}
+
+
+
+	.orbs {
+		background-color: transparent;
+		border-radius: 100%;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%) scale(0);
+		transform-origin: 0 0;
+		opacity: 0;
+	}
+
+
+	.out {
+		transform: scale(0) translate(-50%, -50%);
+		opacity: 0;
+	}
+	.out {
+		animation: outOrbs forwards 1;
+	}
+
+	.out1 {
+		width: 50%;
+		background-color: rgb(254 133 63 / 5%);
+	}
+
+	.out2 {
+		width: 100%;
+	}
+
+	.out3 {
+		width: 150%;
+	}
+
+	.star5.out1 {
+		box-shadow: 0 0 50px rgb(251 193 60 / 50%), inset 0 0 50px rgb(251 193 60 / 50%);
+	}
+	.star5.out2 {
+		box-shadow: 0 0 150px rgb(255 255 255 / 50%), inset 0 0 170px rgb(255 255 255 / 50%);
+	}
+	.star5.out3 {
+		box-shadow: 0 0 200px rgb(253 148 48 / 60%), inset 0 0 170px rgb(253 148 48 / 60%);
+	}
+
+
+	@keyframes orbs2 {
+		0% {
+			transform: scale(0) translateX(-50%);
+		}
+		90% {
+			transform: scale(1) translateX(-50%);
+			opacity: 1;
+		}
+		100% {
+			transform: scale(1) translateX(-50%);
+			opacity: 0;
+		}
+	}
+
+	@keyframes outOrbs {
+		30% {
+			opacity: 1;
+		}
+		100% {
+			transform: scale(2) translate(-50%, -50%);
+			opacity: 0;
+		}
+	}

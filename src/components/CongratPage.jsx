@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Video from '../assets/5star-single.mp4'
 import Sound from '../assets/reveal-5star.ogg'
+import Chracter from '../assets/640.png'
 
 function CongratPage(props) {
   const [finished, setFinished] = useState(false);
@@ -8,7 +9,7 @@ function CongratPage(props) {
   useEffect(() => {
     setTimeout(() => {
       setFinished(true);
-    }, 6200)
+    }, 6700)
   }, [])
 
 
@@ -17,9 +18,27 @@ function CongratPage(props) {
       {
         finished ?
           <div className='background'>
-            <video autoPlay style={{ display: "none" }}>
+            <video autoPlay playsInline style={{ display: "none" }}>
               <source src={Sound} type="video/ogg" />
             </video>
+            <div className="art-wrapper">
+              <div
+                className="out star5 orbs out1"
+                style={{ animationDuration: '0.8s', animationDelay: '.1s', aspectRatio: '1/1' }}
+              />
+              <div className="out star5 orbs out2" style={{ animationDuration: '2s', aspectRatio: '1/1' }} />
+              <div
+                className="out star5 orbs out3"
+                style={{ animationDuration: '1.2s', animationDelay: '.1s', aspectRatio: '1/1' }}
+              />
+              <div className="zoomist-wrapper splash-art anim" style={{ overflow: 'visible' }}>
+                <div className="zoomist-image" style={{}}>
+                  <img
+                    src={Chracter}
+                  />
+                </div>
+              </div>
+            </div>
             <div className='info'>
               <div className="name animate">
                 <div className="text animate">
@@ -41,7 +60,8 @@ function CongratPage(props) {
 
           </div>
           :
-          <video width="100%" height="100%" autoPlay style={{ minHeight: '100%', minWidth: '100%', objectFit: 'cover' }}>
+          <video width="100%" height="100%" autoPlay
+            playsInline style={{ minHeight: '100%', minWidth: '100%', objectFit: 'cover' }}>
             <source src={Video} type="video/mp4" />
           </video>
       }
